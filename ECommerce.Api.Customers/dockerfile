@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY "ECommerce.Api.Customers.csproj" .
+RUN dotnet restore "ECommerce.Api.Customers.csproj"
+COPY . .
+RUN dotnet publish  -c Release -o /app/publish
+
+
+FROM build  AS final
+COPY --from=build /app/publish  .
+ENTRYPOINT ["dotnet", "ECommerce.Api.Customers.dll"]
+
