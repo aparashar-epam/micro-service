@@ -6,12 +6,20 @@ services:
     build:
       context: ./ECommerce.Api.Customers
       dockerfile: dockerfile
+    environment:
+       - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+       - "6002:80"
 
   ecommerce.api.orders:
     image: orderapi
     build:
       context: ./ECommerce.Api.Orders
       dockerfile: dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "6003:80"
 
 
   ecommerce.api.products:
@@ -19,6 +27,10 @@ services:
     build:
       context: ./ECommerce.Api.Products
       dockerfile: dockerfile
+    environment:
+     - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+     - "6001:80"
 
 
   ecommerce.api.search:
@@ -26,3 +38,10 @@ services:
     build:
       context: ./ECommerce.Api.Search
       dockerfile: dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Services__Products=http://ecommerce.api.products
+      - Services__Customers=http://ecommerce.api.customers
+      - Services__Orders=http://ecommerce.api.orders
+    ports:
+      - "6004:80"
