@@ -1,0 +1,148 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecommerce-api-customers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecommerce-api-customers
+  template:
+    metadata:
+      labels:
+        app: ecommerce-api-customers
+    spec:
+      containers:
+      - name: ecommerce-api-customers
+        image: customerapi
+        ports:
+        - containerPort: 6003
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecommerce-api-customers
+spec:
+  type: LoadBalancer
+  selector:
+    app: ecommerce-api-customers
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecommerce-api-orders
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecommerce-api-orders
+  template:
+    metadata:
+      labels:
+        app: ecommerce-api-orders
+    spec:
+      containers:
+      - name: ecommerce-api-orders
+        image: orderapi
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecommerce-api-orders
+spec:
+  type: LoadBalancer
+  selector:
+    app: ecommerce-api-orders
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecommerce-api-products
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecommerce-api-products
+  template:
+    metadata:
+      labels:
+        app: ecommerce-api-products
+    spec:
+      containers:
+      - name: ecommerce-api-products
+        image: productapi
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecommerce-api-products
+spec:
+  type: LoadBalancer
+  selector:
+    app: ecommerce-api-products
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecommerce-api-search
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecommerce-api-search
+  template:
+    metadata:
+      labels:
+        app: ecommerce-api-search
+    spec:
+      containers:
+      - name: ecommerce-api-search
+        image: searchapi
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        - name: Services__Products
+          value: http://ecommerce-api-products
+        - name: Services__Customers
+          value: http://ecommerce-api-customers
+        - name: Services__Orders
+          value: http://ecommerce-api-orders
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecommerce-api-search
+spec:
+  type: LoadBalancer
+  selector:
+    app: ecommerce-api-search
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
